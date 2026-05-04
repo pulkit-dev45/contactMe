@@ -42,12 +42,16 @@
                 const data = await response.json();
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
-                window.location.href = "{% url 'contacts_list' %}";
+                showSuccess('Login successful! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = "{% url 'contacts_list' %}";
+                }, 1000);
             } else {
-                alert('Invalid credentials');
+                const error = await handleApiError(response);
+                showError(error || 'Invalid credentials');
             }
         } catch (error) {
-            alert('Login failed: ' + error.message);
+            showError('Login failed: ' + error.message);
         }
     });
 </script>

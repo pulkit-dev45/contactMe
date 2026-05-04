@@ -69,10 +69,13 @@
                 displayContacts(contacts);
             } else if (response.status === 401) {
                 window.location.href = "{% url 'login' %}";
+            } else {
+                const error = await handleApiError(response);
+                showError(error || 'Failed to load contacts');
             }
         } catch (error) {
             console.error('Error loading contacts:', error);
-            document.getElementById('contactsList').innerHTML = '<p>Error loading contacts</p>';
+            showError('Error loading contacts: ' + error.message);
         } finally {
             document.getElementById('loadingSpinner').style.display = 'none';
         }
@@ -90,7 +93,11 @@
             <div class="contact-card">
                 <div class="contact-header">
                     <h3>${contact.name}</h3>
-                    <button class="menu-btn" onclick="openContactModal(${contact.id})">⋮</button>
+                    <div class="badges">
+                        ${contact.status === 'active' ? '<span class="badge badge-active">Active</span>' : ''}
+                        ${contact.is_online ? '<span class="badge badge-online">Online</span>' : ''}
+                        <span class="badge badge-${contact.category}">${contact.category.charAt(0).toUpperCase() + contact.category.slice(1)}</span>
+                    </div>
                 </div>
                 <div class="contact-info">
                     <p><strong>Email:</strong> ${contact.email}</p>
@@ -111,6 +118,10 @@
             const response = await fetch(`http://127.0.0.1:8000/api/contacts/${contactId}/`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            if (!response.ok) {
+                showError('Failed to load contact details');
+                return;
+            }
             const contact = await response.json();
             
             const modal = document.getElementById('contactModal');
@@ -133,7 +144,7 @@
                 </div>
             `;
         } catch (error) {
-            alert('Error loading contact details');
+            showError('Error loading contact details: ' + error.message);
         }
     }
 
@@ -156,12 +167,15 @@
             });
 
             if (response.ok) {
-                alert('Contact deleted successfully');
+                showSuccess('Contact deleted successfully');
                 loadContacts();
                 closeContactModal();
+            } else {
+                const error = await handleApiError(response);
+                showError(error || 'Error deleting contact');
             }
         } catch (error) {
-            alert('Error deleting contact');
+            showError('Error deleting contact: ' + error.message);
         }
     }
 
@@ -174,6 +188,10 @@
             const response = await fetch('http://127.0.0.1:8000/api/contacts/', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            if (!response.ok) {
+                showError('Failed to search contacts');
+                return;
+            }
             const contacts = await response.json();
             
             const filtered = contacts.filter(contact => 
@@ -185,6 +203,7 @@
             displayContacts(filtered);
         } catch (error) {
             console.error('Search error:', error);
+            showError('Search error: ' + error.message);
         }
     });
 </script>

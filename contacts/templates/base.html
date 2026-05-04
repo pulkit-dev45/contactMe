@@ -9,6 +9,9 @@
 </head>
 <body>
     <div class="app">
+        <!-- Message Display System -->
+        <div id="messageContainer" class="message-container"></div>
+        
         {% if show_navbar %}
         <header class="navbar">
             <div class="navbar-left">
@@ -26,6 +29,7 @@
         </main>
     </div>
     
+    <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/api.js' %}"></script>
     <script>
         // Redirect to login if no token

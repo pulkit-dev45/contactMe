@@ -27,15 +27,18 @@ async function apiCall(endpoint, method = 'GET', data = null) {
             // Token expired, redirect to login
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
-            window.location.href = '/login/';
+            showError('Session expired. Please login again.');
+            setTimeout(() => {
+                window.location.href = '/login/';
+            }, 1000);
             return null;
         }
 
         if (response.ok) {
             return await response.json();
         } else {
-            const error = await response.json();
-            throw new Error(JSON.stringify(error));
+            const errorMsg = await handleApiError(response);
+            throw new Error(errorMsg);
         }
     } catch (error) {
         console.error('API Error:', error);

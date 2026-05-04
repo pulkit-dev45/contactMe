@@ -43,14 +43,16 @@
             });
             
             if (response.ok) {
-                alert('Registration successful! Please login.');
-                window.location.href = "{% url 'login' %}";
+                showSuccess('Registration successful! Redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = "{% url 'login' %}";
+                }, 2000);
             } else {
-                const data = await response.json();
-                alert('Registration failed: ' + JSON.stringify(data));
+                const error = await handleApiError(response);
+                showError(error || 'Registration failed');
             }
         } catch (error) {
-            alert('Registration error: ' + error.message);
+            showError('Registration error: ' + error.message);
         }
     });
 </script>
