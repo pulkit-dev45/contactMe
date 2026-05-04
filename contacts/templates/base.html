@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Contact Manager{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="app">
+        {% if show_navbar %}
+        <header class="navbar">
+            <div class="navbar-left">
+                <h1 class="logo">📋 Contact Manager</h1>
+            </div>
+            <div class="navbar-right">
+                <span class="user-info" id="userInfo"></span>
+                <a href="{% url 'logout' %}" class="logout-btn" onclick="logout()">Logout</a>
+            </div>
+        </header>
+        {% endif %}
+        
+        <main class="container">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    <script src="{% static 'js/api.js' %}"></script>
+    <script>
+        // Redirect to login if no token
+        const requiredAuth = '{{ required_auth }}' === 'True';
+        const hasToken = localStorage.getItem('access_token');
+        
+        if (requiredAuth && !hasToken) {
+            window.location.href = '/login/';
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
