@@ -14,9 +14,11 @@
         <input type="text" id="searchInput" placeholder="Search by name, email, phone..." class="search-box">
         <select id="categoryFilter" class="category-filter">
             <option value="">All Categories</option>
-            <option value="work">Work</option>
-            <option value="personal">Personal</option>
+            <option value="friend">Friend</option>
             <option value="family">Family</option>
+            <option value="work">Work</option>
+            <option value="emergency">Emergency</option>
+            <option value="other">Other</option>
         </select>
         <button class="btn btn-secondary" id="filterBtn">Filter</button>
     </div>
@@ -44,8 +46,13 @@
 {% block scripts %}
 <script src="{% static 'js/contacts.js' %}"></script>
 <script>
-    // Load contacts on page load
+    let allContacts = [];
+    
     document.addEventListener('DOMContentLoaded', loadContacts);
+    
+    document.getElementById('searchInput').addEventListener('input', filterContacts);
+    document.getElementById('categoryFilter').addEventListener('change', filterContacts);
+    document.getElementById('filterBtn').addEventListener('click', filterContacts);
 
     async function loadContacts() {
         const token = localStorage.getItem('access_token');
@@ -65,8 +72,8 @@
             });
 
             if (response.ok) {
-                const contacts = await response.json();
-                displayContacts(contacts);
+                allContacts = await response.json();
+                filterContacts();
             } else if (response.status === 401) {
                 window.location.href = "{% url 'login' %}";
             } else {
@@ -79,6 +86,24 @@
         } finally {
             document.getElementById('loadingSpinner').style.display = 'none';
         }
+    }
+
+    function filterContacts() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const categoryFilter = document.getElementById('categoryFilter').value;
+
+        const filtered = allContacts.filter(contact => {
+            const matchesSearch = !searchTerm || 
+                contact.name.toLowerCase().includes(searchTerm) ||
+                contact.email.toLowerCase().includes(searchTerm) ||
+                contact.phone.includes(searchTerm);
+            
+            const matchesCategory = !categoryFilter || contact.category === categoryFilter;
+            
+            return matchesSearch && matchesCategory;
+        });
+
+        displayContacts(filtered);
     }
 
     function displayContacts(contacts) {
@@ -178,33 +203,5 @@
             showError('Error deleting contact: ' + error.message);
         }
     }
-
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', async (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const token = localStorage.getItem('access_token');
-        
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/contacts/', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!response.ok) {
-                showError('Failed to search contacts');
-                return;
-            }
-            const contacts = await response.json();
-            
-            const filtered = contacts.filter(contact => 
-                contact.name.toLowerCase().includes(searchTerm) ||
-                contact.email.toLowerCase().includes(searchTerm) ||
-                contact.phone.includes(searchTerm)
-            );
-            
-            displayContacts(filtered);
-        } catch (error) {
-            console.error('Search error:', error);
-            showError('Search error: ' + error.message);
-        }
-    });
 </script>
 {% endblock %}

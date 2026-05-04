@@ -43,10 +43,24 @@
             });
             
             if (response.ok) {
-                showSuccess('Registration successful! Redirecting to login...');
-                setTimeout(() => {
-                    window.location.href = "{% url 'login' %}";
-                }, 2000);
+                showSuccess('Registration successful! Logging in...');
+                
+                // Auto login after registration
+                const loginResponse = await fetch('http://127.0.0.1:8000/api/token/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (loginResponse.ok) {
+                    const data = await loginResponse.json();
+                    localStorage.setItem('access_token', data.access);
+                    localStorage.setItem('refresh_token', data.refresh);
+                    showSuccess('Redirecting to contacts...');
+                    setTimeout(() => {
+                        window.location.href = "{% url 'contacts_list' %}";
+                    }, 1000);
+                }
             } else {
                 const error = await handleApiError(response);
                 showError(error || 'Registration failed');
