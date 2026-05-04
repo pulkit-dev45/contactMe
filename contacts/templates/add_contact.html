@@ -81,7 +81,7 @@
 
         if (isEditMode) {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/contacts/${contactId}/`, {
+                const response = await fetch(`/api/contacts/${contactId}/`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) {
@@ -119,8 +119,8 @@
 
         try {
             const url = isEditMode 
-                ? `http://127.0.0.1:8000/api/contacts/${contactId}/`
-                : 'http://127.0.0.1:8000/api/contacts/';
+                ? `/api/contacts/${contactId}/`
+                : '/api/contacts/';
             
             const method = isEditMode ? 'PUT' : 'POST';
 
@@ -137,7 +137,7 @@
                 showSuccess(isEditMode ? 'Contact updated successfully' : 'Contact created successfully');
                 setTimeout(() => {
                     window.location.href = "{% url 'contacts_list' %}";
-                }, 1000);
+                }, 300);
             } else {
                 const error = await handleApiError(response);
                 showError(error || (isEditMode ? 'Error updating contact' : 'Error creating contact'));

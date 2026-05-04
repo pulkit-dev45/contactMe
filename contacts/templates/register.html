@@ -76,7 +76,7 @@
                     showSuccess('Redirecting to contacts...');
                     setTimeout(() => {
                         window.location.href = "{% url 'contacts_list' %}";
-                    }, 1000);
+                    }, 380);
                 }
             } else {
                 const error = await handleApiError(response);

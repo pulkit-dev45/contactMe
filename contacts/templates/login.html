@@ -44,7 +44,7 @@
                 showSuccess('Login successful! Redirecting...');
                 setTimeout(() => {
                     window.location.href = "{% url 'contacts_list' %}";
-                }, 1000);
+                }, 350);
             } else {
                 const error = await handleApiError(response);
                 showError(error || 'Invalid credentials');

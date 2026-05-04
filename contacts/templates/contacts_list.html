@@ -75,7 +75,7 @@
 
         try {
             document.getElementById('loadingSpinner').style.display = 'block';
-            const response = await fetch('http://127.0.0.1:8000/api/contacts/', {
+            const response = await fetch('/api/contacts/', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -152,7 +152,7 @@
     async function openContactModal(contactId) {
         const token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/contacts/${contactId}/`, {
+            const response = await fetch(`/api/contacts/${contactId}/`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) {
@@ -214,7 +214,7 @@
 
         const token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/contacts/${contactToDelete}/`, {
+            const response = await fetch(`/api/contacts/${contactToDelete}/`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
